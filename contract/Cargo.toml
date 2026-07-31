@@ -1,0 +1,22 @@
+[package]
+name = "stellar-crowdfunding-contract"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+soroban-sdk = "22.0.1"
+
+[patch.crates-io]
+ethnum = { path = "./ethnum_patch" }
+
+[profile.release]
+opt-level = "z"
+overflow-checks = true
+debug = false
+strip = "symbols"
+debug-assertions = false
+panic = "abort"
+codegen-units = 1
