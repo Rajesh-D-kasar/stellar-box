@@ -53,3 +53,6 @@ jobs:
 
       - name: Build Frontend Application
         run: npm run build
+
+      - name: Lint Frontend Application
+        run: npm run lint
