@@ -1,20 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { StellarWalletsKit, Networks } from '@creit.tech/stellar-wallets-kit';
 import { FreighterModule } from '@creit.tech/stellar-wallets-kit/modules/freighter';
 import { AlbedoModule } from '@creit.tech/stellar-wallets-kit/modules/albedo';
 import { xBullModule } from '@creit.tech/stellar-wallets-kit/modules/xbull';
 import { LobstrModule } from '@creit.tech/stellar-wallets-kit/modules/lobstr';
-import { isAllowed, setAllowed, getAddress, signTransaction, isConnected } from '@stellar/freighter-api';
+import { setAllowed, getAddress, signTransaction, isConnected } from '@stellar/freighter-api';
 import { Horizon, TransactionBuilder, Networks as SDKNetworks, Asset, Operation } from '@stellar/stellar-sdk';
 import './App.css';
 
 const HORIZON_URL = 'https://horizon-testnet.stellar.org';
 const horizon = new Horizon.Server(HORIZON_URL);
 
-// Contract & Asset IDs
-const SOROBAN_CONTRACT_ID = 'CDUMMYCROWDFUNDINGDAPPSTELLARLEVEL3ORANGEBELT';
-const DYNAMIC_NFT_CONTRACT_ID = 'CNFTDYNAMICBADGESTELLARLEVEL3ORANGEBELT';
 const CAMPAIGN_TARGET_XLM = 500;
+const CAMPAIGN_ADDRESS = 'GB72P47RFTUGE5P6V4E2YYIOPF37UBLJ47ZKLNTIOMOTFKY6K2QZ7JQD';
+let eventSequence = 4;
+
+const nextEventId = () => {
+  eventSequence += 1;
+  return eventSequence;
+};
 
 // Initialize StellarWalletsKit
 const kit = new StellarWalletsKit({
@@ -43,8 +47,8 @@ const INITIAL_STREAMED_EVENTS = [
 ];
 
 function App() {
-  const [publicKey, setPublicKey] = useState('');
-  const [walletType, setWalletType] = useState('');
+  const [publicKey, setPublicKey] = useState(() => localStorage.getItem('stellar_box_wallet_key') || '');
+  const [walletType, setWalletType] = useState(() => localStorage.getItem('stellar_box_wallet_name') || '');
   const [balance, setBalance] = useState(null);
   const [balanceLoading, setBalanceLoading] = useState(false);
 
@@ -57,7 +61,7 @@ function App() {
   // Campaign State
   const [totalDonated, setTotalDonated] = useState(210);
   const [donationAmount, setDonationAmount] = useState('25');
-  const [isCreatorVerified, setIsCreatorVerified] = useState(true);
+  const [isCreatorVerified] = useState(true);
   const [milestones, setMilestones] = useState(INITIAL_MILESTONES);
   const [streamedEvents, setStreamedEvents] = useState(INITIAL_STREAMED_EVENTS);
   const [userContribution, setUserContribution] = useState(0);
@@ -77,17 +81,6 @@ function App() {
   const [errorMessage, setErrorMessage] = useState('');
   const [errorType, setErrorType] = useState('');
   const [copied, setCopied] = useState(false);
-
-  // Auto-connect wallet session
-  useEffect(() => {
-    const savedWallet = localStorage.getItem('stellar_box_l3_wallet');
-    const savedKey = localStorage.getItem('stellar_box_l3_key');
-    if (savedWallet && savedKey) {
-      setPublicKey(savedKey);
-      setWalletType(savedWallet);
-      fetchBalance(savedKey);
-    }
-  }, []);
 
   // Compute Dynamic NFT Badge Tier for Donor
   const getDonorTierInfo = (contrib) => {
@@ -129,8 +122,8 @@ function App() {
 
         setPublicKey(pubKey);
         setWalletType('Freighter');
-        localStorage.setItem('stellar_box_l3_wallet', 'Freighter');
-        localStorage.setItem('stellar_box_l3_key', pubKey);
+        localStorage.setItem('stellar_box_wallet_name', 'Freighter');
+        localStorage.setItem('stellar_box_wallet_key', pubKey);
         await fetchBalance(pubKey);
       } else {
         kit.setWallet(walletId);
@@ -142,8 +135,8 @@ function App() {
         }
         setPublicKey(address);
         setWalletType(walletName);
-        localStorage.setItem('stellar_box_l3_wallet', walletName);
-        localStorage.setItem('stellar_box_l3_key', address);
+        localStorage.setItem('stellar_box_wallet_name', walletName);
+        localStorage.setItem('stellar_box_wallet_key', address);
         await fetchBalance(address);
       }
     } catch (err) {
@@ -167,8 +160,8 @@ function App() {
     setErrorMessage('');
     setErrorType('');
     setUserContribution(0);
-    localStorage.removeItem('stellar_box_l3_wallet');
-    localStorage.removeItem('stellar_box_l3_key');
+    localStorage.removeItem('stellar_box_wallet_name');
+    localStorage.removeItem('stellar_box_wallet_key');
   };
 
   // Fetch Horizon Balance
@@ -204,14 +197,14 @@ function App() {
       } else {
         setErrorMessage('Friendbot rate limit hit or network busy.');
       }
-    } catch (err) {
+    } catch {
       setErrorMessage('Friendbot request failed.');
     } finally {
       setFaucetLoading(false);
     }
   };
 
-  // Soroban Donation & Dynamic NFT Upgrade Flow
+  // Testnet XLM donation flow
   const donateToCampaign = async (e) => {
     if (e) e.preventDefault();
     if (!publicKey) {
@@ -248,7 +241,7 @@ function App() {
       })
         .addOperation(
           Operation.payment({
-            destination: 'GB72P47RFTUGE5P6V4E2YYIOPF37UBLJ47ZKLNTIOMOTFKY6K2QZ7JQD',
+            destination: CAMPAIGN_ADDRESS,
             asset: Asset.native(),
             amount: amountNum.toString(),
           })
@@ -267,7 +260,7 @@ function App() {
             networkPassphrase: SDKNetworks.TESTNET,
           });
           signedXdr = typeof signed === 'string' ? signed : (signed?.signedTxXdr || signed?.xdr);
-        } catch (signErr) {
+        } catch {
           setErrorType('USER_REJECTED');
           setErrorMessage('User rejected transaction in wallet.');
           setTxStatus('Failed');
@@ -278,7 +271,7 @@ function App() {
         try {
           const { signedTxXdr } = await kit.signTransaction(transaction.toXDR());
           signedXdr = signedTxXdr;
-        } catch (signErr) {
+        } catch {
           setErrorType('USER_REJECTED');
           setErrorMessage('User rejected transaction in wallet.');
           setTxStatus('Failed');
@@ -287,7 +280,7 @@ function App() {
         }
       }
 
-      setTxStatus('Submitting to Stellar Testnet & Triggering Dynamic NFT Upgrade...');
+      setTxStatus('Submitting payment to Stellar Testnet...');
 
       const txToSubmit = horizon.transactionFromXDR(signedXdr);
       const response = await horizon.submitTransaction(txToSubmit);
@@ -308,7 +301,6 @@ function App() {
         amount: amountNum,
         sender: publicKey,
         timestamp: new Date().toLocaleTimeString(),
-        contract: SOROBAN_CONTRACT_ID,
         badgeUnlocked: newTierInfo.tier > oldTier ? newTierInfo.name : null,
       };
       setLastReceipt(receipt);
@@ -317,7 +309,7 @@ function App() {
       // Add to Event Stream
       const eventsToAdd = [
         {
-          id: Date.now(),
+          id: nextEventId(),
           type: 'donate',
           donor: `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`,
           amount: amountNum,
@@ -328,7 +320,7 @@ function App() {
 
       if (newTierInfo.tier > oldTier) {
         eventsToAdd.push({
-          id: Date.now() + 1,
+          id: nextEventId(),
           type: 'nft_upg',
           donor: `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`,
           tier: newTierInfo.tier,
@@ -374,7 +366,7 @@ function App() {
 
     // Stream Event
     const voteEvent = {
-      id: Date.now(),
+      id: nextEventId(),
       type: 'ms_vote',
       donor: `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`,
       milestoneId: msId,
@@ -560,12 +552,12 @@ function App() {
                 )}
               </div>
               <h2>Stellar Ecosystem Innovation Fund</h2>
-              <p>DAO Milestone-governed crowdfunding with Proof-of-Donation Dynamic NFTs.</p>
+              <p>Make a real XLM testnet payment and explore the campaign experience.</p>
             </div>
 
             {/* Dynamic Donor Badge Box */}
             <div className={`donor-badge-box ${donorTierInfo.class}`}>
-              <span className="badge-title">Your Dynamic NFT Badge</span>
+              <span className="badge-title">Your supporter tier</span>
               <span className="badge-level">{donorTierInfo.name}</span>
               <span className="badge-next">{donorTierInfo.next}</span>
             </div>
@@ -589,7 +581,7 @@ function App() {
               <div className="connect-prompt-box">
                 <div className="illustration-icon">👛</div>
                 <h3>Connect Your Stellar Wallet</h3>
-                <p>Select your favorite wallet to make donations and unlock Dynamic NFT Badges.</p>
+                <p>Select a wallet to donate XLM on Stellar Testnet. This demo never uses mainnet funds.</p>
                 <button className="btn btn-primary btn-large glow-btn" onClick={() => setShowWalletModal(true)}>
                   ⚡ Select Wallet to Connect
                 </button>
@@ -609,7 +601,7 @@ function App() {
                       <span className="info-label">XLM Balance</span>
                       <div className="balance-actions">
                         <button className="faucet-btn" onClick={requestFriendbot} disabled={faucetLoading}>💧 {faucetLoading ? 'Funding...' : 'Faucet'}</button>
-                        <button className="refresh-btn" onClick={() => fetchBalance(publicKey)}>🔄</button>
+                        <button className="refresh-btn" onClick={() => fetchBalance(publicKey)} disabled={balanceLoading} aria-label="Refresh XLM balance" title="Refresh balance">🔄</button>
                       </div>
                     </div>
                     <div className="balance-value">
@@ -620,7 +612,7 @@ function App() {
                 </div>
 
                 <div className="tx-section">
-                  <h3>Donate XLM & Level Up Dynamic NFT</h3>
+                  <h3>Donate XLM on Testnet</h3>
                   <form onSubmit={donateToCampaign} className="tx-form">
                     <div className="form-group">
                       <label htmlFor="amount">Select Preset Amount (XLM)</label>
@@ -635,7 +627,7 @@ function App() {
                     </div>
                     <div className="button-group">
                       <button type="submit" className="btn btn-primary glow-btn" disabled={isProcessing}>
-                        {isProcessing ? 'Processing Payment & NFT Upgrade...' : `💖 Donate ${donationAmount} XLM`}
+                        {isProcessing ? 'Processing payment...' : `Donate ${donationAmount} XLM`}
                       </button>
                     </div>
                   </form>
@@ -660,7 +652,7 @@ function App() {
         {activeTab === 'dao' && (
           <div className="dao-tab-view">
             <h3>🏛️ DAO Milestone Payout Governance</h3>
-            <p className="tab-desc">Donors vote to release milestone funds to campaign creators based on donation weight.</p>
+            <p className="tab-desc">Try the interaction locally. Votes shown here are a UI prototype and do not trigger a blockchain payout.</p>
 
             <div className="milestones-list">
               {milestones.map((ms) => {
@@ -708,7 +700,7 @@ function App() {
         {activeTab === 'analytics' && (
           <div className="analytics-tab-view">
             <h3>📊 Campaign Analytics Dashboard</h3>
-            <p className="tab-desc">Real-time performance metrics and donor statistics.</p>
+            <p className="tab-desc">A campaign snapshot that updates after a successful testnet payment in this session.</p>
 
             <div className="analytics-grid">
               <div className="analytics-card">
@@ -722,9 +714,9 @@ function App() {
                 <span className="analytics-sub">1 of 3 Milestones Released</span>
               </div>
               <div className="analytics-card">
-                <span className="analytics-label">Donor NFT Badges Minted</span>
-                <span className="analytics-num">14 Badges</span>
-                <span className="analytics-sub">4 Gold • 6 Silver • 4 Bronze</span>
+                <span className="analytics-label">Supporter tiers</span>
+                <span className="analytics-num">3 levels</span>
+                <span className="analytics-sub">Bronze, Silver and Gold progress</span>
               </div>
             </div>
           </div>
@@ -734,7 +726,7 @@ function App() {
         {activeTab === 'ai_assistant' && (
           <div className="ai-tab-view">
             <h3>🤖 Gemini AI Campaign Assistant</h3>
-            <p className="tab-desc">AI assistant helping draft campaign details and explaining Soroban DAO governance.</p>
+            <p className="tab-desc">A local writing helper for campaign copy and demo explanations. It does not send your text to an AI service.</p>
 
             <div className="quick-prompts">
               <button className="prompt-chip" onClick={() => sendAiQuery('Draft a campaign description for Soroban grants')}>✍️ Draft Campaign Copy</button>
@@ -769,7 +761,7 @@ function App() {
         {activeTab === 'events' && (
           <div className="events-tab-view">
             <h3>📡 Real-time Soroban Event Stream</h3>
-            <p className="tab-desc">Streamed contract logs for donations, NFT tier evolutions, creator verification, and DAO votes.</p>
+            <p className="tab-desc">Activity generated in this browser session, including successful payments and demo votes.</p>
 
             <div className="events-stream-list">
               {streamedEvents.map((evt) => (
