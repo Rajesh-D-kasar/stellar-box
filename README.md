@@ -1,16 +1,63 @@
-# React + Vite
+# ✦ stellar-box
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+> A lightweight Stellar dApp toolkit — built with **Vite + React**.
 
-Currently, two official plugins are available:
+[![Stellar](https://img.shields.io/badge/Stellar-Testnet-7c5cbf?style=flat-square&logo=stellar)](https://stellar.org)
+[![Vite](https://img.shields.io/badge/Vite-8.x-646cff?style=flat-square&logo=vite)](https://vite.dev)
+[![React](https://img.shields.io/badge/React-19-61dafb?style=flat-square&logo=react)](https://react.dev)
+[![License](https://img.shields.io/badge/License-MIT-4fcfaf?style=flat-square)](LICENSE)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 📦 Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Layer | Library |
+|---|---|
+| Frontend Framework | React 19 + Vite 8 |
+| Stellar Network | `@stellar/stellar-sdk` |
+| Wallet Integration | `@stellar/freighter-api` |
+| Styling | Vanilla CSS (CSS Modules + design tokens) |
+| Deployment | GitHub Pages (`/stellar-box/`) |
 
-## Expanding the Oxlint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## 🚀 Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+---
+
+## 🗂 Project Structure
+
+```
+src/
+├── components/     # Reusable UI components
+├── pages/          # Page-level components
+├── hooks/          # Custom React hooks (useWallet, etc.)
+├── context/        # React context providers (WalletContext)
+├── utils/          # Stellar helpers, formatters
+├── styles/         # Global CSS design tokens
+└── assets/         # Static images / icons
+```
+
+---
+
+## 🔗 Deployment
+
+This project is configured for **GitHub Pages** deployment at `/stellar-box/`.
+The `base` option in `vite.config.js` is pre-set to `/stellar-box/`.
+
+---
+
+## 📄 License
+
+MIT © stellar-box contributors

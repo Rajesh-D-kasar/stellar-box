@@ -1,23 +1,45 @@
 /**
  * useWallet.js
  * Custom hook — manages Freighter wallet connection state.
- * Freighter SDK will be integrated in a later step.
+ * Uses @stellar/freighter-api (installed in Step 2).
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import {
+  isConnected,
+  getAddress,
+  requestAccess,
+} from '@stellar/freighter-api';
 
 export function useWallet() {
   const [publicKey, setPublicKey] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState(null);
 
+  /** Re-hydrate wallet from Freighter on mount (if already authorized). */
+  useEffect(() => {
+    async function rehydrate() {
+      try {
+        const connected = await isConnected();
+        if (connected?.isConnected) {
+          const result = await getAddress();
+          if (result?.address) setPublicKey(result.address);
+        }
+      } catch {
+        // Freighter not installed or not authorized yet — silently ignore.
+      }
+    }
+    rehydrate();
+  }, []);
+
   const connect = useCallback(async () => {
     setIsConnecting(true);
     setError(null);
     try {
-      // TODO: integrate @stellar/freighter-api
-      // const { publicKey } = await requestAccess();
-      // setPublicKey(publicKey);
-      console.warn('Wallet connection: Freighter SDK not yet integrated.');
+      const accessResult = await requestAccess();
+      if (accessResult?.error) throw new Error(accessResult.error);
+      const addressResult = await getAddress();
+      if (addressResult?.error) throw new Error(addressResult.error);
+      setPublicKey(addressResult.address);
     } catch (err) {
       setError(err?.message ?? 'Failed to connect wallet');
     } finally {
@@ -30,5 +52,7 @@ export function useWallet() {
     setError(null);
   }, []);
 
-  return { publicKey, isConnecting, error, connect, disconnect };
+  const isConnectedState = Boolean(publicKey);
+
+  return { publicKey, isConnectedState, isConnecting, error, connect, disconnect };
 }
