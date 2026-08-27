@@ -4,5 +4,5 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/stellar-box/', // Required for GitHub Pages deployment
+  base: './', // Relative path for flexible deployment routing
 })
