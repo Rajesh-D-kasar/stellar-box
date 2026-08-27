@@ -47,7 +47,7 @@ function AppShell() {
       <Header />
 
       {/* Main dashboard content */}
-      <main id="main-content">
+      <main id="main-content" className="dashboard-container">
         {/* XLM balance card + token list */}
         <BalanceDashboard />
 
@@ -55,8 +55,9 @@ function AppShell() {
         <hr style={{
           border: 'none',
           borderTop: '1px solid var(--color-border)',
-          margin: '0 auto',
+          width: '100%',
           maxWidth: '760px',
+          margin: '0 auto',
         }} />
 
         {/* XLM transfer form — locked until wallet is connected */}
