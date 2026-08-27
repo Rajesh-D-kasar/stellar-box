@@ -9,6 +9,25 @@
 
 ---
 
+## 🌟 Project Showcase & Demo
+
+This repository represents the completed **stellar-box** tutorial dApp. 
+
+### 🌐 Live Demo
+You can test the fully functional deployment here: 
+**[Launch Stellar Box dApp 🚀](https://Rajesh-D-kasar.github.io/stellar-box/)**
+
+### 📦 v1.0.0 Release
+To view the source code at the exact moment of the final stable completion, check out the [v1.0.0 Release](https://github.com/Rajesh-D-kasar/stellar-box/releases/tag/v1.0.0) on GitHub.
+
+**To test the app yourself:**
+1. Install the [Freighter browser extension](https://www.freighter.app/).
+2. Switch Freighter to the **Testnet** network.
+3. Use the [Stellar Laboratory Friendbot](https://laboratory.stellar.org/#account-creator?network=test) to fund your account with test XLM.
+4. Open the live demo, connect your wallet, and try sending a payment!
+
+---
+
 ## ✅ Progress / Feature Checklist
 
 - [x] **Step 1:** Initialize Vite + React project (`stellar-box`)
