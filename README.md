@@ -28,22 +28,36 @@ To view the source code at the exact moment of the final stable completion, chec
 
 ---
 
-## ✅ Progress / Feature Checklist
+## 📜 Development Timeline & Milestone Log
 
+### Phase 1: Foundation & Setup
 - [x] **Step 1:** Initialize Vite + React project (`stellar-box`)
 - [x] **Step 2:** Install Stellar SDKs (`@stellar/stellar-sdk`, `@stellar/freighter-api`)
 - [x] **Step 3:** Scaffold UI layouts (`Header`, `Navbar`)
 - [x] **Step 4:** Freighter Wallet connection logic (`WalletContext`, `WalletConnect`)
 - [x] **Step 5:** Horizon Testnet polling & XLM Balance display (`BalanceDashboard`)
+
+### Phase 2: Transaction Engine
 - [x] **Step 6:** Real-time form validation & Transfer inputs (`TransferForm`)
 - [x] **Step 7:** Build Payment Transaction Object (`useTransaction.js`, `TransactionBuilder`)
 - [x] **Step 8:** Freighter XDR Signature UI (`signTransaction`, `TransactionStatus`)
 - [x] **Step 9:** Horizon Network Submission (`submitTransaction`)
 - [x] **Step 10:** Block Explorer Redirection (Stellar Expert `txHash` link)
+
+### Phase 3: Polish & Deployment
 - [x] **Step 11:** UI/UX Polish (Dark/Light mode, Glassmorphism, CSS Variables)
 - [x] **Step 12:** Codebase Modularization & Refactoring
 - [x] **Step 13:** Production Build Verification (`dist` checks)
-- [x] **Step 14 & 15:** Deployment Setup (`gh-pages`, `package.json` scripts)
+- [x] **Step 14:** Link Remote Repository & Force Push History
+- [x] **Step 15:** Deployment Setup (`gh-pages`, `npm run deploy`)
+
+### Phase 4: Release & Open Source
+- [x] **Step 16:** Final Code Sweep & Sync Documentation
+- [x] **Step 17:** Official Release Tagging (`v1.0.0`)
+- [x] **Step 18:** Health Check & Live Deployment Verification
+- [x] **Step 19:** Open Source Docs (`CONTRIBUTING.md`, Issue Templates, `LICENSE`)
+- [x] **Step 20:** Portfolio Showcase Updates & Cache Cleanup
+- [x] **Step 21:** Final Milestone Synchronization & Wrap-up
 
 ---
 
