@@ -1,0 +1,211 @@
+/* ============================================================
+   WalletConnect.module.css
+   Styles for all four wallet states
+   ============================================================ */
+
+/* ── Skeleton loader (CHECKING state) ── */
+.skeleton {
+  width: 130px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(
+    90deg,
+    rgba(42, 47, 74, 0.6) 25%,
+    rgba(80, 70, 120, 0.4) 50%,
+    rgba(42, 47, 74, 0.6) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Base button ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 0.5rem 1.25rem;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    opacity     var(--transition-fast),
+    transform   var(--transition-fast),
+    box-shadow  var(--transition-fast);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* ── Connect button ── */
+.btnConnect {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-glow));
+  color: #fff;
+  box-shadow: var(--shadow-glow);
+}
+
+.btnConnect:hover:not(:disabled) {
+  box-shadow: 0 0 28px rgba(124, 92, 191, 0.6);
+  opacity: 0.92;
+}
+
+.btnConnect:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Install Freighter button ── */
+.btnInstall {
+  background: rgba(42, 47, 74, 0.9);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  box-shadow: none;
+}
+
+.btnInstall:hover {
+  border-color: var(--color-primary);
+  color: var(--color-text);
+  box-shadow: 0 0 16px rgba(124, 92, 191, 0.2);
+}
+
+/* ── Disconnect button ── */
+.btnDisconnect {
+  background: rgba(255, 107, 107, 0.1);
+  color: var(--color-error);
+  border: 1px solid rgba(255, 107, 107, 0.25);
+  font-size: 0.78rem;
+  padding: 0.35rem 0.85rem;
+}
+
+.btnDisconnect:hover {
+  background: rgba(255, 107, 107, 0.18);
+  border-color: var(--color-error);
+}
+
+/* ── Spinner (connecting state) ── */
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Icon glyph ── */
+.icon {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+/* ── Connected group ── */
+.connectedGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ── Address pill ── */
+.addressPill {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(79, 207, 175, 0.1);
+  border: 1px solid rgba(79, 207, 175, 0.3);
+  border-radius: var(--radius-full);
+  padding: 0.35rem 0.85rem;
+  cursor: default;
+  transition: border-color var(--transition-fast);
+}
+
+.addressPill:hover {
+  border-color: var(--color-accent);
+}
+
+/* Green connected dot */
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 0 0 rgba(79, 207, 175, 0.7);
+  animation: connectedPulse 2.5s ease infinite;
+  flex-shrink: 0;
+}
+
+@keyframes connectedPulse {
+  0%   { box-shadow: 0 0 0 0   rgba(79, 207, 175, 0.6); }
+  70%  { box-shadow: 0 0 0 6px rgba(79, 207, 175, 0);   }
+  100% { box-shadow: 0 0 0 0   rgba(79, 207, 175, 0);   }
+}
+
+.address {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--color-accent);
+  letter-spacing: 0.04em;
+}
+
+/* ── Connect group (wraps error + button) ── */
+.connectGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+}
+
+/* ── Error banner ── */
+.errorBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 0.3rem 0.7rem;
+  font-size: 0.75rem;
+  color: var(--color-error);
+  max-width: 260px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.errorDismiss {
+  background: none;
+  border: none;
+  color: var(--color-error);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0 0.1rem;
+  line-height: 1;
+  opacity: 0.7;
+  transition: opacity var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.errorDismiss:hover { opacity: 1; }
