@@ -55,41 +55,64 @@ export default function TransactionStatus({
     );
   }
 
-  /* ── Awaiting signature — show full built-tx details ── */
+  /* ── Awaiting signature — Freighter popup is open ── */
   if (status === TX_STATUS.AWAITING_SIGNATURE) {
-    const seq      = transaction?.sequence        ?? '—';
+    const seq      = transaction?.sequence ?? '—';
     const timeout  = transaction?.timeBounds?.maxTime
       ? new Date(Number(transaction.timeBounds.maxTime) * 1000).toLocaleTimeString()
       : '—';
 
     return (
-      <StatusCard variant="built" aria-live="polite">
-        {/* Header */}
-        <div className={styles.builtHeader}>
-          <span className={styles.builtIcon} aria-hidden="true">✅</span>
+      <StatusCard variant="awaiting" aria-live="polite" aria-busy="true">
+
+        {/* Animated header — draws attention to the Freighter popup */}
+        <div className={styles.awaitingHeader}>
+          <div className={styles.keyIconWrap} aria-hidden="true">
+            <span className={styles.keyIcon}>🔑</span>
+            <span className={styles.keyRing} />
+          </div>
           <div>
-            <p className={styles.builtTitle}>Transaction built successfully</p>
-            <p className={styles.builtSub}>
-              Ready for Freighter signing — Step 8 will complete the flow.
+            <p className={styles.awaitingTitle}>Waiting for your signature</p>
+            <p className={styles.awaitingSub}>
+              Check your Freighter wallet extension — a popup should have opened
+              asking you to <strong>approve</strong> this transaction.
             </p>
           </div>
         </div>
 
-        {/* Metadata grid */}
+        {/* Step-by-step instructions */}
+        <ol className={styles.signingSteps} aria-label="Signing steps">
+          <li className={styles.stepDone}>
+            <span className={styles.stepNum} aria-hidden="true">✓</span>
+            Transaction built &amp; verified
+          </li>
+          <li className={styles.stepActive}>
+            <span className={styles.stepNum} aria-hidden="true">2</span>
+            <strong>Approve in Freighter</strong>
+            <span className={styles.stepHint}>
+              Click the Freighter icon in your browser toolbar if the popup didn’t open.
+            </span>
+          </li>
+          <li className={styles.stepPending}>
+            <span className={styles.stepNum} aria-hidden="true">3</span>
+            Submit to Stellar Testnet
+          </li>
+        </ol>
+
+        {/* Transaction summary for user to verify before approving */}
         <dl className={styles.metaGrid}>
-          <MetaRow label="Network"      value="Stellar Testnet" />
-          <MetaRow label="Fee"          value={fee ? `${fee} XLM` : '—'} mono />
-          <MetaRow label="Sequence"     value={seq}             mono />
-          <MetaRow label="Expires at"   value={timeout} />
-          <MetaRow label="Operations"   value="1 (Payment)" />
-          <MetaRow label="Asset"        value="XLM (native)" />
+          <MetaRow label="Network"    value="Stellar Testnet" />
+          <MetaRow label="Fee"        value={fee ? `${fee} XLM` : '—'} mono />
+          <MetaRow label="Sequence"   value={seq}             mono />
+          <MetaRow label="Expires at" value={timeout} />
+          <MetaRow label="Asset"      value="XLM (native)" />
         </dl>
 
-        {/* XDR preview (collapsible) */}
+        {/* Collapsible XDR */}
         {txXDR && (
           <details className={styles.xdrDetails}>
             <summary className={styles.xdrSummary}>
-              <span>View XDR Envelope</span>
+              <span>View unsigned XDR</span>
               <span className={styles.xdrBadge}>base64</span>
             </summary>
             <div className={styles.xdrBox}>
@@ -106,18 +129,12 @@ export default function TransactionStatus({
           </details>
         )}
 
-        {/* Step 8 notice */}
-        <div className={styles.nextStepBanner}>
-          <span aria-hidden="true">🔑</span>
-          Freighter wallet signing will be integrated in Step 8.
-        </div>
-
-        {/* Reset */}
+        {/* Cancel */}
         <button
           className={styles.resetBtn}
           onClick={onReset}
           type="button"
-          aria-label="Cancel and start a new transfer"
+          aria-label="Cancel transaction"
         >
           ← Cancel
         </button>
@@ -132,8 +149,11 @@ export default function TransactionStatus({
         <div className={styles.loadingRow}>
           <span className={styles.spinner} aria-hidden="true" />
           <div>
-            <p className={styles.loadTitle}>Submitting to Stellar network…</p>
-            <p className={styles.loadSub}>Broadcasting signed transaction to Horizon Testnet.</p>
+            <p className={styles.loadTitle}>Broadcasting to Stellar Testnet…</p>
+            <p className={styles.loadSub}>
+              Signed transaction is being submitted to Horizon. This usually
+              takes 3–5 seconds.
+            </p>
           </div>
         </div>
       </StatusCard>

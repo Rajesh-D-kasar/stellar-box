@@ -1,9 +1,9 @@
 /**
  * transaction.js
- * Core Stellar transaction building utilities.
+ * Core Stellar transaction building and signing utilities.
  *
- * This module is the single source of truth for constructing
- * Stellar payment transactions in stellar-box.
+ * This module is the single source of truth for constructing,
+ * signing, and preparing Stellar payment transactions in stellar-box.
  *
  * SDK primitives used:
  *   - TransactionBuilder  — assembles operations into a transaction envelope
@@ -11,6 +11,10 @@
  *   - Asset.native()      — the native XLM asset
  *   - Networks.TESTNET    — network passphrase for Testnet
  *   - Memo                — optional memo attachment
+ *   - TransactionBuilder.fromXDR — deserialise a signed XDR envelope
+ *
+ * Freighter API:
+ *   - signTransaction     — requests user approval + signature via Freighter popup
  */
 import {
   TransactionBuilder,
@@ -20,6 +24,7 @@ import {
   Memo,
   BASE_FEE,
 } from '@stellar/stellar-sdk';
+import { signTransaction } from '@stellar/freighter-api';
 import { horizonServer } from './horizon';
 
 /* ── Constants ────────────────────────────────────────────── */
@@ -149,6 +154,59 @@ export async function buildPaymentTransaction({
  */
 export function transactionToXDR(transaction) {
   return transaction.toEnvelope().toXDR('base64');
+}
+
+/**
+ * xdrToTransaction(xdr)
+ * Deserialise a base64 XDR envelope string back into a Transaction object.
+ * Used after Freighter returns a signed XDR so we can submit it to Horizon.
+ *
+ * @param {string} xdr - base64 XDR envelope
+ * @returns {Transaction}
+ */
+export function xdrToTransaction(xdr) {
+  return TransactionBuilder.fromXDR(xdr, Networks.TESTNET);
+}
+
+/**
+ * signPaymentTransaction({ xdr, accountToSign })
+ * Requests the user's Freighter wallet to sign the given XDR envelope.
+ *
+ * How Freighter signing works:
+ *  1. Calls signTransaction(xdr, options) from @stellar/freighter-api
+ *  2. Freighter opens a browser popup showing the transaction details
+ *  3. User reviews and clicks "Approve" or "Reject"
+ *  4. On approval: Freighter returns a signed XDR string
+ *  5. On rejection or error: throws an Error
+ *
+ * @param {object} params
+ * @param {string} params.xdr             - Unsigned transaction XDR (base64)
+ * @param {string} [params.accountToSign] - Public key that must sign (optional guard)
+ *
+ * @returns {Promise<string>} Signed transaction XDR (base64)
+ * @throws  {Error} If user rejects or Freighter is unavailable
+ */
+export async function signPaymentTransaction({ xdr, accountToSign }) {
+  if (!xdr) throw new Error('signPaymentTransaction: xdr is required.');
+
+  const signResult = await signTransaction(xdr, {
+    networkPassphrase: Networks.TESTNET,
+    ...(accountToSign ? { accountToSign } : {}),
+  });
+
+  // The freighter-api v2+ returns { signedTxXdr, signerAddress } or throws
+  // Handle both the legacy string return and the new object return shape
+  if (signResult?.error) {
+    throw new Error(signResult.error);
+  }
+
+  const signedXdr = signResult?.signedTxXdr ?? signResult;
+
+  if (!signedXdr || typeof signedXdr !== 'string') {
+    throw new Error('Freighter did not return a signed XDR. Was the transaction rejected?');
+  }
+
+  return signedXdr;
 }
 
 /**

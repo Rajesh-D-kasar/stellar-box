@@ -34,6 +34,17 @@
   box-shadow: 0 4px 24px rgba(124, 92, 191, 0.1);
 }
 
+/* Awaiting signature — amber/gold tinted to signal user action required */
+.card_awaiting {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 183, 77, 0.08) 0%,
+    rgba(22, 25, 40, 0.88) 60%
+  );
+  border-color: rgba(255, 183, 77, 0.35);
+  box-shadow: 0 4px 24px rgba(255, 183, 77, 0.08);
+}
+
 .card_success {
   background: rgba(79, 207, 175, 0.07);
   border-color: rgba(79, 207, 175, 0.35);
@@ -43,6 +54,151 @@
   background: rgba(255, 107, 107, 0.06);
   border-color: rgba(255, 107, 107, 0.3);
 }
+
+/* ── Awaiting signature header ── */
+.awaitingHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.keyIconWrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 48px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.keyIcon { font-size: 1.6rem; position: relative; z-index: 1; }
+
+/* Animated ring around key icon — draws attention */
+.keyRing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 183, 77, 0.6);
+  animation: ringPulse 1.8s ease-out infinite;
+}
+
+@keyframes ringPulse {
+  0%   { transform: scale(0.85); opacity: 1; }
+  100% { transform: scale(1.5);  opacity: 0; }
+}
+
+.awaitingTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.awaitingSub {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin-top: 0.3rem;
+  line-height: 1.6;
+}
+
+.awaitingSub strong {
+  color: rgba(255, 183, 77, 0.9);
+  font-weight: 700;
+}
+
+/* ── Signing step list ── */
+.signingSteps {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.signingSteps li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--color-border);
+  position: relative;
+}
+
+.signingSteps li:last-child { border-bottom: none; }
+
+.stepNum {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Step states */
+.stepDone {
+  color: var(--color-text-muted);
+  background: rgba(79, 207, 175, 0.05);
+}
+
+.stepDone .stepNum {
+  background: rgba(79, 207, 175, 0.15);
+  color: var(--color-accent);
+  border: 1px solid rgba(79, 207, 175, 0.3);
+}
+
+.stepActive {
+  color: var(--color-text);
+  background: rgba(255, 183, 77, 0.06);
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.stepActive > *:first-child { /* stepNum */
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-4);
+}
+
+/* Re-align active step content after absolute stepNum */
+.stepActive {
+  padding-left: calc(var(--space-4) + 22px + var(--space-3));
+}
+
+.stepActive .stepNum {
+  background: rgba(255, 183, 77, 0.2);
+  color: rgba(255, 183, 77, 0.9);
+  border: 1px solid rgba(255, 183, 77, 0.4);
+  animation: stepGlow 2s ease infinite;
+}
+
+@keyframes stepGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 183, 77, 0.4); }
+  50%       { box-shadow: 0 0 0 5px rgba(255, 183, 77, 0); }
+}
+
+.stepHint {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  margin-top: 0.2rem;
+  line-height: 1.5;
+}
+
+.stepPending {
+  color: var(--color-text-muted);
+  opacity: 0.55;
+}
+
+.stepPending .stepNum {
+  background: rgba(42, 47, 74, 0.6);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
 
 /* ── Loading row ── */
 .loadingRow {
