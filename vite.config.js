@@ -4,5 +4,5 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/stellar-box/', // Absolute path for GitHub Pages sub-directory routing
+  base: '/', // Absolute root path for Vercel deployment routing
 })
