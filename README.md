@@ -15,7 +15,7 @@ This repository represents the completed **stellar-box** tutorial dApp.
 
 ### 🌐 Live Demo
 You can test the fully functional deployment here: 
-**[Launch Stellar Box dApp 🚀]([https://Rajesh-D-kasar.github.io/stellar-box/](https://stellar-3dlnd0q76-rajeshkasar428-2871s-projects.vercel.app/))**
+**[Launch Stellar Box dApp 🚀](https://stellar-3dlnd0q76-rajeshkasar428-2871s-projects.vercel.app/)**
 
 ### 📦 v1.0.0 Release
 To view the source code at the exact moment of the final stable completion, check out the [v1.0.0 Release](https://github.com/Rajesh-D-kasar/stellar-box/releases/tag/v1.0.0) on GitHub.
