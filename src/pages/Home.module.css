@@ -1,0 +1,75 @@
+/* Home.module.css */
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 64px);
+  text-align: center;
+  padding: var(--space-12) var(--space-8);
+  overflow: hidden;
+}
+
+/* Ambient glow blob */
+.glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 40%, rgba(124, 92, 191, 0.22) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 70% 60%, rgba(79, 207, 175, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.title {
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--color-text);
+  position: relative;
+}
+
+.accent {
+  background: linear-gradient(135deg, var(--color-primary-glow), var(--color-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  margin-top: var(--space-6);
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  color: var(--color-text-muted);
+  max-width: 540px;
+  line-height: 1.7;
+  position: relative;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+  justify-content: center;
+  position: relative;
+}
+
+.badge {
+  background: rgba(42, 47, 74, 0.7);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+  transition: border-color var(--transition-base), color var(--transition-base);
+}
+
+.badge:hover {
+  border-color: var(--color-primary);
+  color: var(--color-text);
+}
